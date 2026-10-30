@@ -1,32 +1,20 @@
 package main;
 
-public class Carta {
-	private int id;
-    private String name;
-    private String ranks;
-    private String element;
+import java.util.ArrayList;
 
-    public Carta(int id, String name, String ranks, String element) {
-        this.id = id;
+public class Carta {
+    private String name;
+    private ArrayList<Integer> poder ;
+    private String elemento;
+
+    public Carta(String name, String elemento ) {
         this.name = name;
-        this.ranks = ranks;
-        this.element = element;
+        this.poder = new ArrayList<Integer>();
+        this.elemento = elemento;
     }
 
-	public int getId() {
-		return id;
-	}
+    
+    
 
-	public String getName() {
-		return name;
-	}
-
-	public String getRanks() {
-		return ranks;
-	}
-
-	public String getElement() {
-		return element;
-	}
 
 }
