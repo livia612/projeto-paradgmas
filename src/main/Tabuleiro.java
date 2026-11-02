@@ -6,22 +6,27 @@ public class Tabuleiro {
 	private Jogador jogador2;
 
 	
-	public Tabuleiro() {
-		this.matriz = new Carta[3][3];
+	public Tabuleiro(String nome1, String nome2) throws Exception {
+		
+		if (nome1 == null || nome1.trim().isEmpty() || nome2 == null || nome2.trim().isEmpty()) {
+			throw new Exception("Erro: Os nomes dos jogadores não podem ser vazios ou nulos.");
+	    }
+
+	    if (nome1.trim().equalsIgnoreCase(nome2.trim())) {
+	    	throw new Exception("Erro: O nome do Jogador 1 não pode ser igual ao do Jogador 2.");
+	    }
+	    
+	    this.matriz = new Carta[3][3];
 		this.novoBaralho = new Baralho();
-
-	}
-
-	public boolean cadastrarJogadores(String nome1, String nome2) {
-		if(nome1.equalsIgnoreCase(nome2)) {
-			return false;
-		}
+		
 		jogador1 = new Jogador(nome1, novoBaralho.embaralhar());
 		jogador2 = new Jogador(nome2, novoBaralho.embaralhar());
 		atribuirDono();
-		return true;
+		
+		
+
 	}
-	
+
 	public boolean verificar(int linha, int coluna) {
         if (linha < 0 || linha > 2 || coluna < 0 || coluna > 2) {
         	return false;
@@ -62,40 +67,44 @@ public class Tabuleiro {
 		}
 	}
 
-	 public int verificarCapturas(int linha, int coluna, String jogadorAtual) {
+	 public int verificarCapturas(int linha, int coluna, String dono) {
 	        Carta cartaAtual = matriz[linha][coluna];
 	        int capturas = 0;
 
 	        if (linha > 0 && matriz[linha - 1][coluna] != null) {
 	            Carta vizinha = matriz[linha - 1][coluna];
-	            if (!vizinha.dono.equals(jogadorAtual) && cartaAtual.cima > vizinha.baixo) {
-	                vizinha.dono = jogadorAtual;
+	            if (!vizinha.dono.equals(dono) && cartaAtual.cima > vizinha.baixo) {
+	                vizinha.dono = dono;
 	                capturas++;
-	                System.out.println("-> Capturou a carta de cima!");
+	                System.out.println("CAPTUROU a carta de CIMA");
+	                capturas += verificarCapturas(linha - 1, coluna, dono);
 	            }
 	        }
 	        if (linha < 2 && matriz[linha + 1][coluna] != null) {
 	            Carta vizinha = matriz[linha + 1][coluna];
-	            if (!vizinha.dono.equals(jogadorAtual) && cartaAtual.baixo > vizinha.cima) {
-	                vizinha.dono = jogadorAtual;
+	            if (!vizinha.dono.equals(dono) && cartaAtual.baixo > vizinha.cima) {
+	                vizinha.dono = dono;
 	                capturas++;
-	                System.out.println("-> Capturou a carta de baixo!");
+	                System.out.println("CAPTUROU a carta de BAIXO");
+	                capturas += verificarCapturas(linha + 1, coluna, dono);
 	            }
 	        }
 	        if (coluna > 0 && matriz[linha][coluna - 1] != null) {
 	            Carta vizinha = matriz[linha][coluna - 1];
-	            if (!vizinha.dono.equals(jogadorAtual) && cartaAtual.esquerdo > vizinha.direito) {
-	                vizinha.dono = jogadorAtual;
+	            if (!vizinha.dono.equals(dono) && cartaAtual.esquerdo > vizinha.direito) {
+	                vizinha.dono = dono;
 	                capturas++;
-	                System.out.println("-> Capturou a carta da esquerda!");
+	                System.out.println("CAPTUROU a carta da ESQUERDA");
+	                capturas += verificarCapturas(linha, coluna - 1, dono);
 	            }
 	        }
 	        if (coluna < 2 && matriz[linha][coluna + 1] != null) {
 	            Carta vizinha = matriz[linha][coluna + 1];
-	            if (!vizinha.dono.equals(jogadorAtual) && cartaAtual.direito > vizinha.esquerdo) {
-	                vizinha.dono = jogadorAtual;
+	            if (!vizinha.dono.equals(dono) && cartaAtual.direito > vizinha.esquerdo) {
+	                vizinha.dono = dono;
 	                capturas++;
-	                System.out.println("-> Capturou a carta da direita!");
+	                System.out.println("CAPTUROU a carta da DIREITA");
+	                capturas += verificarCapturas(linha, coluna + 1, dono);
 	            }
 	        }
 	        return capturas;
@@ -111,8 +120,14 @@ public class Tabuleiro {
 		return jogador2;
 	}
 
+	
 	public Carta[][] getMatriz() {
 		return matriz;
+	}
+	
+
+	public Baralho getNovoBaralho() {
+		return novoBaralho;
 	}
 
 	public void setMatriz(Carta[][] matriz) {

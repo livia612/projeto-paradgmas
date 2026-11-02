@@ -1,6 +1,5 @@
 package main;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Jogador {
 	private String nome;
@@ -43,6 +42,11 @@ public class Jogador {
 	 public String getNome() {
 		 return nome;
 	 }
+
+	 public void setMao(ArrayList<Carta> mao) {
+		 this.mao = mao;
+	 }
+	 
 	 
 
 	 

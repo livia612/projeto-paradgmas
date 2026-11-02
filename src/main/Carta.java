@@ -13,6 +13,7 @@ public class Carta {
 		this.baixo = baixo;
 		this.direito = direito;
 		this.elemento = elemento;
+		this.dono = null;
 	}
 
 	public String toString() {

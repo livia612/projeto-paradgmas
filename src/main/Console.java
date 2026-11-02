@@ -1,38 +1,43 @@
 package main;
 
+import java.util.Random;
 import java.util.Scanner;
 
 
 
 public class Console {
 	Scanner leitor = new Scanner(System.in);
-	private Tabuleiro novoJogo = new Tabuleiro();
+	private Tabuleiro novoJogo;
+	Random gerador = new Random();
 	
 	
 	public void iniciarJogo() {
 		String nomeJogador1 = lerTexto("Informe o nome do Jogador 1: ");
 		String nomeJogador2 = lerTexto("Informe o nome do Jogador 2: ");
-		novoJogo.cadastrarJogadores(nomeJogador1, nomeJogador2);
-		int partida = 0;
+		
+		try {
+			novoJogo = new Tabuleiro(nomeJogador1, nomeJogador2);
+		} catch (Exception e) {
+			System.out.println(e.getLocalizedMessage());
+			return;
+		}
+		
+		int partida = gerador.nextInt(10);
 		Jogador jogadorAtual;
 
-
+		mostrarCartas(nomeJogador1, nomeJogador2);
+		trocarCartas();
 		
-		while(novoJogo.continuarJogo()) {
-			System.out.println("Cartas JOGADOR "+nomeJogador1 + ": ");
-			System.out.println("----------------------------");
-			for(int i = 0; i<novoJogo.getJogador1().contarCartasNaMao(); i++) {
-				System.out.println(novoJogo.getJogador1().getMao().get(i));
-			}
+		
+		while(novoJogo.continuarJogo() || (!novoJogo.continuarJogo() && novoJogo.getJogador1().getPontos()==novoJogo.getJogador2().getPontos())) {
 			
-			System.out.println("Cartas JOGADOR "+nomeJogador2 + ": ");
-			System.out.println("----------------------------");
-			for(int i = 0; i<novoJogo.getJogador2().contarCartasNaMao(); i++) {
-				System.out.println(novoJogo.getJogador2().getMao().get(i));
+			if(!novoJogo.continuarJogo() && novoJogo.getJogador1().getPontos()==novoJogo.getJogador2().getPontos()) {
+				System.out.println("Uma nova partida começa para encontrar o Vencedor");
+				novoJogo.setMatriz(new Carta[3][3]);
+				novoJogo.getJogador1().setMao(novoJogo.getNovoBaralho().embaralhar());
+				novoJogo.getJogador2().setMao(novoJogo.getNovoBaralho().embaralhar());
+				trocarCartas();
 			}
-			System.out.println("Pontuação: "+nomeJogador1+"(J1) - "+novoJogo.getJogador1().getPontos()+" Pontos | "+nomeJogador2+"(J2) - "+novoJogo.getJogador2().getPontos()+" Pontos");
-			System.out.println("------ TABULEIRO ATUAL ------");
-			System.out.println("-----------------------------");
 			
 			
 			if(partida%2==0) {
@@ -41,12 +46,74 @@ public class Console {
 			}else {
 				jogadorAtual = novoJogo.getJogador2();
 			}
+			
+			mostrarCartas(nomeJogador1, nomeJogador2);
+			
+			System.out.println("Pontuação: "+nomeJogador1+"(J1) - "+novoJogo.getJogador1().getPontos()+" Pontos | "+nomeJogador2+"(J2) - "+novoJogo.getJogador2().getPontos()+" Pontos");
+			System.out.println("------ TABULEIRO ATUAL ------");
+			System.out.println("-----------------------------");
 			imprimirTabuleiro();
 			informarCarta(jogadorAtual);
 			partida++;
 			
 			
+			
 		}
+		
+		System.out.println("-----------------------------");
+		System.out.println("----------VENCEDOR-----------");
+		if(novoJogo.getJogador1().getPontos()>novoJogo.getJogador2().getPontos()) {
+		System.out.println("->->-> "+nomeJogador1+" <-<-<-");
+		System.out.println("COM "+novoJogo.getJogador1().getPontos()+" PONTOS");
+		
+		}else {
+			System.out.println("->->-> "+nomeJogador2+" <-<-<-");
+			System.out.println("COM "+novoJogo.getJogador2().getPontos()+" PONTOS");
+		}
+		
+		System.out.println("-----------------------------");
+	}
+	
+	private void mostrarCartas(String nome1, String nome2) {
+		System.out.println("Cartas JOGADOR "+nome1 + ": ");
+		System.out.println("----------------------------");
+		for(int i = 0; i<novoJogo.getJogador1().contarCartasNaMao(); i++) {
+			System.out.println(novoJogo.getJogador1().getMao().get(i));
+		}
+		
+		System.out.println("Cartas JOGADOR "+nome2 + ": ");
+		System.out.println("----------------------------");
+		for(int i = 0; i<novoJogo.getJogador2().contarCartasNaMao(); i++) {
+			System.out.println(novoJogo.getJogador2().getMao().get(i));
+		}
+		
+	}
+	
+	private void trocarCartas() {
+		Carta carta1 = null;
+		Carta carta2 = null;
+	    while (carta1 == null) {
+	        String nomeCarta1 = lerTexto(novoJogo.getJogador1().getNome() + ", informe o NOME da carta que deseja pegar: ");
+	        carta1 = novoJogo.getJogador2().procurarCarta(nomeCarta1);
+	        if (carta1 == null) {
+	            System.out.println("Carta inválida. Digite o nome corretamente.");
+	        }
+	    }
+	    while (carta2 == null) {
+	        String nomeCarta2 = lerTexto(novoJogo.getJogador2().getNome() + ", informe o NOME da carta que deseja pegar: ");
+	        carta2 = novoJogo.getJogador1().procurarCarta(nomeCarta2);
+	        if (carta2 == null) {
+	            System.out.println("Carta inválida. Digite o nome corretamente.");
+	        }
+	    }
+	    
+	    novoJogo.getJogador1().getMao().remove(carta2);
+	    novoJogo.getJogador2().getMao().remove(carta1);
+	    
+	    novoJogo.getJogador1().getMao().add(carta1);
+	    novoJogo.getJogador2().getMao().add(carta2);
+	    
+	    novoJogo.atribuirDono();
 	}
 	
 	private void imprimirTabuleiro() {
@@ -99,8 +166,6 @@ public class Console {
 	private boolean informarCarta(Jogador jogadorAtual) {
 	    while (true) {
 	        String personagem = lerTexto(jogadorAtual.getNome() + " informe o NOME da carta: ");
-	        
-	       
 	        Carta cartaJogador = jogadorAtual.procurarCarta(personagem);
 	        
 	        if (cartaJogador != null) {
@@ -110,16 +175,27 @@ public class Console {
 	           
 	            if (novoJogo.colocarCarta(cartaJogador, linha, coluna)) {
 	            	jogadorAtual.getMao().remove(cartaJogador);
-	            	novoJogo.verificarCapturas(linha, coluna, jogadorAtual.getNome());
+	            	
+	            	int capturas = novoJogo.verificarCapturas(linha, coluna, cartaJogador.dono);
+	            	
+	            	if(jogadorAtual == novoJogo.getJogador1()) {
+	            		novoJogo.getJogador2().setPontos(novoJogo.getJogador2().getPontos()- capturas);
+	            	}else {
+	            		novoJogo.getJogador1().setPontos(novoJogo.getJogador1().getPontos()- capturas);
+	            	}
+	            	
+	            	jogadorAtual.setPontos(jogadorAtual.getPontos()+capturas);
+	            	
 	                return true; 
 	            } else {
-	                System.out.println("Posição inválida ou já ocupada no tabuleiro! Tente novamente.");
+	                System.out.println("Posição inválida ou já ocupada no tabuleiro!");
 	            }
 	        } else {
-	            System.out.println("Carta não encontrada na sua mão. Informe uma carta válida.");
+	            System.out.println("Informe uma carta válida.");
 	        }
 	    }
 	}
+	
 	
 	private int lerInteiro(String mensagem) {
 		while (true) {

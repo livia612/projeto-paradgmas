@@ -6,6 +6,7 @@ import java.util.Random;
 public class Baralho {
 	private ArrayList<Carta> cartas;
 
+
 	public Baralho() {
 		this.cartas = new ArrayList<Carta>();
 		
@@ -49,13 +50,16 @@ public class Baralho {
 		cartas.add(carta19);
 		Carta carta20 = new Carta("Grendel", 4,2,5,4, "THUNDER");
 		cartas.add(carta20);
+		
 	}
 	
-	public ArrayList<Carta> embaralhar(){
+	
+	public ArrayList<Carta> embaralhar() {
 		Random gerador = new Random();
 		ArrayList<Carta> cartasJogador = new ArrayList<Carta>();
-		for(int i = 0; i<5; i++) {
-			cartasJogador.add(cartas.get(gerador.nextInt(cartas.size())));
+		for(int i = 0; i < 5; i++) {
+			int indice = gerador.nextInt(cartas.size());
+			cartasJogador.add(cartas.remove(indice));
 		}
 		return cartasJogador;
 	}
